@@ -21,18 +21,13 @@ class moving_average(object):
             self.dts.append(t-self.last_t)
             self.last_t = t
             if len(self.dts) > self.window_size-1:
-                print "hit window size"
                 self.dts.pop(0)
 
     def get_stats(self):
         n = len(self.dts)
         if n > 0:
-            mean = sum(self.dts)/n
-            rate = 1./mean if mean > 0 else 0.
-            std_dev = math.sqrt(sum((x - mean)**2 for x in self.dts) /n)
-            min_dt = min(self.dts)
-            max_dt = max(self.dts)
-            return [rate, mean, std_dev, min_dt, max_dt]
+            stats = [x(self.dts) for x in [np.mean, np.std, np.min, np.max]]
+            return [1./stats[0] if stats[0] > 0. else 0.] + stats
         else:
             return [0,0,0,0,0]
 
